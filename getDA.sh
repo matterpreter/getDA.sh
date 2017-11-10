@@ -30,22 +30,22 @@ fi
 if ! cme_loc="$(type -p cme)" || [ -d "/opt/CrackMapExec/" ]; then
   echo "[-] Couldn't find CME. Installing now..."
   git clone https://github.com/byt3bl33d3r/CrackMapExec.git /opt/CrackMapExec
-  #*** Logic check here. If we're running on Kali, we can install CME via APT
-  #apt install crackmapexec
 fi
 if [[ ! -d "/opt/SIET/" ]]; then
   echo "[-] Couldn't find SIET. Installing now..."
   git clone https://github.com/Sab0tag3d/SIET.git /opt/SIET
 fi
-if ! cme_loc="$(type -p cme)" || [ -d "/opt/CrackMapExec/" ]; then
-  echo "[-] Couldn't find CME. Installing now..."
-  git clone https://github.com/byt3bl33d3r/CrackMapExec.git /opt/CrackMapExec
-  # Need to install CME if not going installing via APT
-  #apt install crackmapexec
-fi
 if ! rpcclient_loc="$(type -p rpcclient)"; then # Don't know where this would be the case, but who knows
   echo "[-] Couldn't find rpcclient. Installing now..."
   apt install rpcclient
+fi
+if ! nmap_loc="$(type -p nmap)"; then
+  echo "[-] Couldn't find nmap. Installing now..."
+  apt install nmap
+fi
+if ! masscan_loc="$(type -p masscan)"; then
+  echo "[-] Couldn't find masscan. Installing now..."
+  apt install masscan
 fi
 
 
@@ -56,43 +56,37 @@ echo "${RED}------------------------------------------------${NC}"
 echo "Currently supported vectors to check:"
 echo "1) SMB Relay" # Done
 echo "2) Kerberoast" # Done
-echo "3) MS17-010 (EternalBlue)" # To Do
+echo "3) MS17-010 (EternalBlue)" # In Prggress
 echo "4) Null Session Enumeration" # In Progress
 echo "5) Cisco Smart Install" # Done
 echo "0) All of the above"
 
-read OPTION
+read -p "Option: " OPTION
 
 echo "Before we get started, enter file containing your targets (/root/targets.txt):"
 read TARGETSFILE
 
-if [[ "$OPTION" == "1" ]]; then
-  echo "[+] Checking if a SMB relay attack is viable"
-  smbRelay $TARGETSFILE
-elif [[ "$OPTION" == "2" ]]; then
-  echo "[+] Getting ready to kerberoast"
-  kerberoast
-elif [[ "$OPTION" == "3" ]]; then
-  echo "[+] Checking for MS17-010"
-elif [[ "$OPTION" == "4" ]]; then
-  echo "[+] Attempting to get usernames via null sessions"
-  nullSessionEnum
-elif [[ "$OPTION" == "5" ]]; then
-  echo "[+] Checking for hosts with Cisco Smart Install enabled"
-  kerberoast $TARGETSFILE
-elif [[ "$OPTION" == "0" ]]; then
-  echo "[+] Running all checks."
-  echo "[+] Checking if a SMB relay attack is viable"
-  smbRelay
-  echo "[+] Getting ready to kerberoast"
-  kerberoast
-  echo "[+] Checking hosts for MS17-010"
-  #ms17-010
-  echo "[+] Checking for null session enumeration"
-  #nullSessionEnum
-  echo "[+] Checking for Cisco Smart Install"
-  #smartInstall
-else
-  echo "[-] No option selected. Terminating."
-  exit 1
-fi
+case "$OPTION" in
+  1)  echo "[+] Checking if a SMB relay attack is viable"
+      smbRelay $TARGETSFILE
+  2)  echo "[+] Getting ready to kerberoast"
+      kerberoast
+  3)  echo "[+] Checking for MS17-010"
+      ms17-010 $TARGETSFILE
+  4)  echo "[+] Attempting to get usernames via null sessions"
+      nullSessionEnum
+  5)  echo "[+] Checking for hosts with Cisco Smart Install enabled"
+      smartInstall $TARGETSFILE
+  0)  echo "[+] Running all checks."
+      echo "[+] Checking if a SMB relay attack is viable"
+      smbRelay $TARGETSFILE
+      echo "[+] Getting ready to kerberoast"
+      kerberoast
+      echo "[+] Checking hosts for MS17-010"
+      ms17-010 $TARGETSFILE
+      echo "[+] Checking for null session enumeration"
+      nullSessionEnum
+      echo "[+] Checking for Cisco Smart Install"
+      smartInstall $TARGETSFILE
+  *) echo "That is not a valid option. Try again.";;
+esac
