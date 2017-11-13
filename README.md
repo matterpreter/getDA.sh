@@ -6,8 +6,9 @@ This script checks for a few common, high-impact findings I find myself using to
 2. Kerberoasting  
 3. Null session enumeration  
 4. Cisco Smart Install  
+5. MS17-010
 
-I plan to add more to this as time goes on. The idea here isn't to autopwn (although that would be simple to implement), but to provide something that you can easily throw on a Linux box inside a target network while you grab a coffee and it will spit back a few things to try.  
+I plan to add more to this as time goes on. The idea here is to provide something that you can easily throw on a Linux box inside a target network while you grab a coffee and it will spit back a few things to try.  
 
 **Tools needed (it'll check just in case):**  
 - [lgandx's fork of Responder](https://github.com/lgandx/Responder)  
@@ -20,5 +21,10 @@ I plan to add more to this as time goes on. The idea here isn't to autopwn (alth
 
 
 **To Do:**
-- [ ] MS17-010
+- [x] MS17-010
+- [ ] Test MS17-010
+- [ ] Fix MS17-010 scan result parser
+- [ ] Complete null session tests
+- [ ] Implement SMB message signing checks as their own function
 - [ ] Automatic scope generation
+- [ ] Autopwn? :)

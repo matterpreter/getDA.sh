@@ -23,6 +23,10 @@ if [[ ! -d "/opt/Responder/" ]]; then
   git clone https://github.com/lgandx/Responder.git /opt/Responder
   # Need to install Responder as well
 fi
+if ! python_loc="$(type -p python)"; then
+  echo "[-] Couldn't find Python. Installing now..."
+  apt -y install python
+fi
 if [[ ! -d "/opt/impacket/" ]]; then
   echo "[-] Couldn't find Impacket. Installing now..."
   git clone https://github.com/CoreSecurity/impacket.git /opt/impacket
@@ -37,28 +41,28 @@ if [[ ! -d "/opt/SIET/" ]]; then
 fi
 if ! rpcclient_loc="$(type -p rpcclient)"; then # Don't know where this would be the case, but who knows
   echo "[-] Couldn't find rpcclient. Installing now..."
-  apt install rpcclient
+  apt -y install rpcclient
 fi
 if ! nmap_loc="$(type -p nmap)"; then
   echo "[-] Couldn't find nmap. Installing now..."
-  apt install nmap
+  apt -y install nmap
 fi
 if ! masscan_loc="$(type -p masscan)"; then
   echo "[-] Couldn't find masscan. Installing now..."
-  apt install masscan
+  apt -y install masscan
 fi
 
 
 echo "${RED}------------------------------------------------${NC}"
 echo "${RED}-------------------${GREEN}}EZ mode DA${RED}-------------------${NC}"
-echo "${RED}--------------------${GREEN}v0.1beta${RED}--------------------${NC}"
+echo "${RED}----------------------${GREEN}v0.2beta${RED}----------------------${NC}"
 echo "${RED}------------------------------------------------${NC}"
 echo "Currently supported vectors to check:"
-echo "1) SMB Relay" # Done
-echo "2) Kerberoast" # Done
-echo "3) MS17-010 (EternalBlue)" # In Prggress
-echo "4) Null Session Enumeration" # In Progress
-echo "5) Cisco Smart Install" # Done
+echo "1) SMB Relay"
+echo "2) Kerberoast"
+echo "3) MS17-010 (EternalBlue)"
+echo "4) Null Session Enumeration"
+echo "5) Cisco Smart Install"
 echo "0) All of the above"
 
 read -p "Option: " OPTION
