@@ -19,12 +19,13 @@ I plan to add more to this as time goes on. The idea here is to provide somethin
 - [rpcclient](https://www.samba.org/samba/docs/man/manpages-3/rpcclient.1.html)  
 - [nmap](https://nmap.org/)  
 
+*ALL AUTOPWN FEATURES ARE UNTESTED AND EXPERIMENTAL!*
 
 **To Do:**
 - [x] MS17-010
-- [ ] Test MS17-010
+- [x] Test MS17-010
 - [ ] Fix MS17-010 scan result parser
-- [ ] Complete null session tests
+- [x] Complete null session tests
 - [ ] Implement SMB message signing checks as their own function
 - [ ] Automatic scope generation
 - [ ] Autopwn? :)
