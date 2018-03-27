@@ -18,7 +18,7 @@ I plan to add more to this as time goes on. The idea here is to provide somethin
 - [masscan](https://github.com/robertdavidgraham/masscan)  
 - [rpcclient](https://www.samba.org/samba/docs/man/manpages-3/rpcclient.1.html)  
 - [nmap](https://nmap.org/)  
-- [type7decrypt.pl](https://github.com/matterpreter/misc/type7decrypt.pl)  
+- [type7decrypt.pl](https://github.com/matterpreter/misc/blob/master/type7decrypt.pl)  
   
 *ALL AUTOPWN FEATURES ARE UNTESTED AND EXPERIMENTAL!*
 
