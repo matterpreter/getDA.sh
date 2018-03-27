@@ -12,6 +12,9 @@
 source ./attacks.sh
 
 # Colors make this more l33t
+ERROR='\033[0;31m[-]\033[0m'
+UPDATE='\033[1;33m[!]\033[0m'
+SUCCESS='\033[0;32m[+]\033[0m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
@@ -23,7 +26,6 @@ if [[ $1 = "--autopwn" ]]; then
   AUTOPWN="true"
 else
   AUTOPWN="false"
-  echo "try again"
 fi
 
 # Check if required tools exist. Only supporting tools in /opt but this is easy
@@ -63,11 +65,15 @@ if ! masscan_loc="$(type -p masscan)"; then
   echo "[-] Couldn't find masscan. Installing now..."
   apt -y install masscan
 fi
+if [[ ! -f "/opt/type7decrypt.pl"]]; then
+  echo "[-] Couldn't find type7decrypt.pl. Installing now..."
+  wget https://raw.githubusercontent.com/matterpreter/misc/master/type7decrypt.pl -O /opt/type7decrypt.pl
+fi
 
 
 echo -e "${BLUE}------------------------------------------------${NC}"
 echo -e "${BLUE}-------------------${YELLOW}EZ mode DA${BLUE}-------------------${NC}"
-echo -e "${BLUE}--------------------${YELLOW}v0.3beta${BLUE}--------------------${NC}"
+echo -e "${BLUE}--------------------${YELLOW}v0.4beta${BLUE}--------------------${NC}"
 if [[ $AUTOPWN = 'true' ]]; then
   echo -e "${BLUE}---------------${YELLOW}Autopwn: ${RED}ACTIVATED${BLUE}---------------${NC}"
 fi
@@ -83,40 +89,40 @@ echo "0) All of the above"
 read -p "Option: " OPTION
 
 case "$OPTION" in
-  1)  echo "[+] Checking if a SMB relay attack is viable"
+  1)  echo -e "$UPDATE Checking if a SMB relay attack is viable"
       echo "Before we get started, enter file containing your targets (/root/targets.txt)" #*** Need to fix this so that it doesn't run if the option isn't valid
-      read -p "Targets file: " TARGETSFILE
+      read -e -p "Targets file: " TARGETSFILE
       smbRelay $TARGETSFILE
       ;;
-  2)  echo "[+] Getting ready to kerberoast"
+  2)  echo -e "$UPDATE Getting ready to kerberoast"
       kerberoast
       ;;
-  3)  echo "[+] Checking for MS17-010"
+  3)  echo -e "$UPDATE Checking for MS17-010"
       echo "Before we get started, enter file containing your targets (/root/targets.txt)" #*** Need to fix this so that it doesn't run if the option isn't valid
-      read -p "Targets file: " TARGETSFILE
+      read -e -p "Targets file: " TARGETSFILE
       ms17-010 $TARGETSFILE
       ;;
-  4)  echo "[+] Attempting to get usernames via null sessions"
+  4)  echo -e "$UPDATE Attempting to get usernames via null sessions"
       nullSessionEnum
       ;;
-  5)  echo "[+] Checking for hosts with Cisco Smart Install enabled"
+  5)  echo -e "$UPDATE Checking for hosts with Cisco Smart Install enabled"
       echo "Before we get started, enter file containing your targets (/root/targets.txt)" #*** Need to fix this so that it doesn't run if the option isn't valid
-      read -p "Targets file: " TARGETSFILE
+      read -e -p "Targets file: " TARGETSFILE
       smartInstall $TARGETSFILE
       ;;
-  0)  echo "[+] Running all checks."
+  0)  echo -e "$UPDATE Running all checks."
       echo "Before we get started, enter file containing your targets (/root/targets.txt)" #*** Need to fix this so that it doesn't run if the option isn't valid
-      read -p "Targets file: " TARGETSFILE
-      echo "[+] Checking if a SMB relay attack is viable"
+      read -e -p "Targets file: " TARGETSFILE
+      echo -e "$UPDATE Checking if a SMB relay attack is viable"
       smbRelay $TARGETSFILE
-      echo "[+] Getting ready to kerberoast"
+      echo -e "$UPDATE Getting ready to kerberoast"
       kerberoast
-      echo "[+] Checking hosts for MS17-010"
+      echo -e "$UPDATE Checking hosts for MS17-010"
       ms17-010 $TARGETSFILE
-      echo "[+] Checking for null session enumeration"
+      echo -e "$UPDATE Checking for null session enumeration"
       nullSessionEnum
-      echo "[+] Checking for Cisco Smart Install"
+      echo -e "$UPDATE Checking for Cisco Smart Install"
       smartInstall $TARGETSFILE
       ;;
-  *) echo "That is not a valid option. Try again.";;
+  *) echo -e "$ERROR That is not a valid option. Try again.";;
 esac
