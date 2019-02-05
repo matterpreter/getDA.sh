@@ -1,7 +1,8 @@
 # getDA.sh
 
-This script checks for a few common, high-impact findings I find myself using to get Domain Administrator access when I don't care about being sneaky. Currently, it supports:  
+This script checks for a few common, easy to leverage vulnerabilites I find testers using to get Domain Administrator access when stealth doesn't matter. This was a joke that turned into a POC, so please don't use this for real. It is more of a fun automation project than something actually useful.  
 
+Currently supports:  
 1. SMB relaying  
 2. Kerberoasting  
 3. Null session enumeration  
