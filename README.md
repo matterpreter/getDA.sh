@@ -1,5 +1,7 @@
 # getDA.sh
 
+_Disclosure: this is just a meme. Please don't actually use this._
+
 This script checks for a few common, easy to leverage vulnerabilites I find testers using to get Domain Administrator access when stealth doesn't matter. This was a joke that turned into a POC, so please don't use this for real. It is more of a fun automation project than something actually useful.  
 
 Currently supports:  
